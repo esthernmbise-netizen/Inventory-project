@@ -11,7 +11,7 @@
     >
 
     <title>
-        {{ $title ?? 'Duka Inventory' }}
+        {{ $title ?? 'Categories' }}
     </title>
 
     <style>
@@ -46,12 +46,32 @@
             padding: 0 16px;
         }
 
-        .card {
-            background: white;
+        .main-card {
+            background-color: #fddf9e;
             padding: 20px;
             border-radius: 12px;
             margin-bottom: 20px;
             box-shadow: 0 2px 10px rgba(0,0,0,.05);
+            display: flex;
+            flex-direction: column;
+            box-sizing:20px;
+        }
+
+        .card {
+            background-color: #eeeae2;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,.05);
+        }
+
+        .list-group-item {
+            background-color: #fdf6dffb;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,.05);
+            border: 1px solid #f8d76b;
         }
 
         .btn {
@@ -137,11 +157,7 @@
         Categories
     </a>
 
-<<<<<<< HEAD
     <a href="{{ route('products.index') }}">
-=======
-    <a href="{{ route('product.index') }}">
->>>>>>> 535a3560ad0e486c80f4f76e7ee6e7c7d7fd4b0f
         Products
     </a>
 
