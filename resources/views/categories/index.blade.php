@@ -1,87 +1,104 @@
-@extends('layouts.categories')
+@extends('layouts.app')
 
 @section('content')
 
-<div class="main-card">
+<div class="card">
 
     <h1>
-        Product Categories
+        Categories
     </h1>
 
-    <p>
-       <i>Categories for each product in your listore.</i>
-    </p>
+    <a
+        class="btn"
+        href="{{ route('categories.create') }}"
+    >
+        + Add Category
+    </a>
 
 </div>
 
 
 <div class="card">
 
-    <h2>
-        Main Workflow
-    </h2>
- <div>
-    <a href="{{ route('categories.show', 1) }}">
-        <div class="list-group-item">
-            <p>Beverages</p>
-        </div>
-        <span class=card-arrow>&rsaquo;</span>
-    </a>
-    <a href="{{ route('categories.show', 2) }}">
-        <div class="list-group-item">
-            <p>Snacks</p>
-        </div>
-    </a>
-    <a href="{{ route('categories.show', 3) }}">
-        <div class="list-group-item">
-            <p>Fruits</p>
-        </div>
-    </a>
-    <a href="{{ route('categories.show', 4) }}">
-        <div class="list-group-item">
-            <p>Meat</p>
-        </div>
-    </a>
-    <a href="{{ route('categories.show', 5) }}">
-        <div class="list-group-item">
-            <p>Vegetables</p>
-        </div>
-    </a>
-    <a href="{{ route('categories.show', 6) }}">
-        <div class="list-group-item">
-            <p>Household Items</p>
-        </div>
-    </a>
-    <a href="{{ route('categories.show', 7) }}">
-        <div class="list-group-item">
-            <p>Cleaning Supplies</p>
-        </div>
-    </a>
-    <a href="{{ route('categories.show', 8) }}">
-        <div class="list-group-item">
-            <p>Personal Care Products</p>
-        </div>
-    </a>
-    <a href="{{ route('categories.show', 9) }}">
-        <div class="list-group-item">
-            <p>Stationery</p>
-        </div>
-    </a>
-    <a href="{{ route('categories.show', 10) }}">
-        <div class="list-group-item">
-            <p>Food Items</p>
-        </div>
-    </a>
-    <a href="{{ route('categories.show', 11) }}">
-        <div class="list-group-item">
-            <p>Clothing</p>
-        </div>
-    </a>
-        
- </div>
-    
-       
-    </p>
+<table>
+
+<thead>
+
+<tr>
+    <th>Name</th>
+    <th>Description</th>
+    <th>Actions</th>
+</tr>
+
+</thead>
+
+<tbody>
+
+@forelse($categories as $category)
+
+<tr>
+
+<td>
+    {{ $category->name }}
+</td>
+
+<td>
+    {{ $category->description ?: '—' }}
+</td>
+
+<td class="actions">
+
+<a
+    class="btn"
+    href="{{ route('categories.show', $category) }}"
+>
+    View
+</a>
+
+<a
+    class="btn"
+    href="{{ route('categories.edit', $category) }}"
+>
+    Edit
+</a>
+
+<form
+    method="POST"
+    action="{{ route('categories.destroy', $category) }}"
+>
+
+@csrf
+@method('DELETE')
+
+<button
+    class="btn btn-danger"
+    type="submit"
+    onclick="return confirm('Delete this category?')"
+>
+    Delete
+</button>
+
+</form>
+
+</td>
+
+</tr>
+
+@empty
+
+<tr>
+
+<td colspan="3">
+    No categories yet.
+</td>
+
+</tr>
+
+@endforelse
+
+</tbody>
+
+</table>
 
 </div>
 

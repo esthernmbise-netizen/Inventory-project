@@ -17,11 +17,11 @@ Route::get('/dashboard', function () {
 
 Route::resource('categories', CategoryController::class);
 
-<<<<<<< HEAD
+
 Route::resource('products', ProductController::class);
-=======
+
 Route::resource('product', ProductController::class);
->>>>>>> 535a3560ad0e486c80f4f76e7ee6e7c7d7fd4b0f
+
 
 Route::resource('suppliers', SupplierController::class);
 

@@ -75,7 +75,7 @@
 
                 <tbody>
 
-                    @foreach($products as $product)
+                    @foreach($product as $product)
 
                         <tr>
 

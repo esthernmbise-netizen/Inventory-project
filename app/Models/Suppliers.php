@@ -3,14 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
-class Suppliers extends Model
-{
-    <?php
-
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Supplier extends Model
@@ -19,5 +11,5 @@ class Supplier extends Model
     {
         return $this->hasMany(Purchase::class);
     }
-}
+    protected($fillable)= ['name','phone','address']
 }

@@ -54,6 +54,7 @@ class ProductController extends Controller
         return view('product.edit', compact(
             'product',
             'categories'
+            ('supplier'),
         ));
     }
 
@@ -66,6 +67,7 @@ class ProductController extends Controller
             'selling_price' => ['required', 'numeric', 'min:0'],
             'quantity' => ['required', 'integer', 'min:0'],
             'minimum_stock' => ['required', 'integer', 'min:0'],
+            'supplier'=> ['required','string','max:255'],
         ]);
 
         $product->update($validated);

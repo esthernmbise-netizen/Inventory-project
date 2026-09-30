@@ -92,6 +92,63 @@
 
 <div class="card">
 
+    <h2>Supplier Overview</h2>
+
+    <div style="
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+    ">
+
+        <div style="
+            background: #e8f1ff;
+            padding: 20px;
+            border-radius: 12px;
+        ">
+            <p style="color: #2459a6;">
+                Total Purchases
+            </p>
+
+            <h2 style="color: #2459a6;">
+                {{ $totalPurchases }}
+            </h2>
+        </div>
+
+        <div style="
+            background: #e6f5e9;
+            padding: 20px;
+            border-radius: 12px;
+        ">
+            <p style="color: #207a3d;">
+                Total Expenditure
+            </p>
+
+            <h2 style="color: #207a3d;">
+                TZS {{ number_format($totalExpenditure, 2) }}
+            </h2>
+        </div>
+
+        <div style="
+            background: #fff1db;
+            padding: 20px;
+            border-radius: 12px;
+        ">
+            <p style="color: #946200;">
+                Different Products
+            </p>
+
+            <h2 style="color: #946200;">
+                {{ $totalProducts }}
+            </h2>
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="card">
+
     <h2>Purchase History</h2>
 
     @if($supplier->purchases->count())

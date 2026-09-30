@@ -137,11 +137,11 @@
         Categories
     </a>
 
-<<<<<<< HEAD
+
     <a href="{{ route('products.index') }}">
-=======
+
     <a href="{{ route('product.index') }}">
->>>>>>> 535a3560ad0e486c80f4f76e7ee6e7c7d7fd4b0f
+
         Products
     </a>
 

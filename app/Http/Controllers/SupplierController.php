@@ -34,12 +34,29 @@ class SupplierController extends Controller
             ->with('success', 'Supplier created successfully.');
     }
 
-    public function show(Supplier $supplier)
-    {
-        $supplier->load('purchases.product');
+ 
+public function show(Supplier $supplier)
+{
+    $supplier->load('purchases.product');
 
-        return view('suppliers.show', compact('supplier'));
-    }
+    $totalPurchases = $supplier->purchases->count();
+
+    $totalExpenditure = $supplier->purchases->sum(function ($purchase) {
+        return $purchase->quantity * $purchase->buying_price;
+    });
+
+    $totalProducts = $supplier->purchases
+        ->pluck('product_id')
+        ->unique()
+        ->count();
+
+    return view('suppliers.show', compact(
+        'supplier',
+        'totalPurchases',
+        'totalExpenditure',
+        'totalProducts'
+    ));
+}
 
     public function edit(Supplier $supplier)
     {
