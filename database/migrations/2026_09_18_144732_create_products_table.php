@@ -19,6 +19,7 @@ return new class extends Migration
               ->cascadeOnDelete();
 
         $table->string('name');
+        $table->string('s.name');
         $table->decimal('buying_price', 12, 2);
         $table->decimal('selling_price', 12, 2);
         $table->integer('quantity')->default(0);
@@ -33,6 +34,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('prodects');
+        Schema::dropIfExists('products');
     }
 };
