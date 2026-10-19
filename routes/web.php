@@ -7,24 +7,22 @@ use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
+use Illuminate\Auth\Events\Verified;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\SuperAdminController;
 
-
-// ===============================
-// GUEST ROUTES
-// ===============================
-
+// Guests: login and registration
 Route::middleware('guest')->group(function () {
-
-    // Login
     Route::get('/login', [LoginController::class, 'showLoginForm'])
         ->name('login');
 
     Route::post('/login', [LoginController::class, 'login'])
         ->name('login.submit');
 
-    // Registration
     Route::get('/register', [RegisterController::class, 'showRegistrationForm'])
         ->name('register');
 
@@ -32,49 +30,72 @@ Route::middleware('guest')->group(function () {
         ->name('register.submit');
 });
 
-
-// ===============================
-// PROTECTED ROUTES
-// ===============================
-
+// Logged-in users: verification, resend email, and logout
 Route::middleware('auth')->group(function () {
+    Route::get('/email/verify', function () {
+        return view('auth.verify-email');
+    })->name('verification.notice');
 
-    // Logout
+
+  Route::get('/email/verify/{id}/{hash}', function (
+    \Illuminate\Foundation\Auth\EmailVerificationRequest $request
+) {
+    $request->fulfill();
+
+    $user = $request->user();
+
+    if ($user->role === 'super_admin') {
+        return redirect()->route('superadmin.dashboard')
+            ->with('success', 'Email verified successfully!');
+    }
+
+    return redirect()->route('dashboard')
+        ->with('success', 'Email verified successfully!');
+})->middleware(['signed', 'throttle:6,1'])
+  ->name('verification.verify');
+
+    Route::post('/email/verification-notification', function (Request $request) {
+        if ($request->user()->hasVerifiedEmail()) {
+            return redirect()->route('dashboard');
+        }
+
+        $request->user()->sendEmailVerificationNotification();
+
+        return back()->with(
+            'success',
+            'A new verification link has been sent to your email.'
+        );
+    })->middleware('throttle:6,1')->name('verification.send');
+
     Route::post('/logout', [LoginController::class, 'logout'])
         ->name('logout');
+});
+
+// Inventory pages: login AND verified email required
+Route::middleware(['auth', 'verified'])->group(function () {
 
 
-    // Home
+    Route::get('/superadmin', [SuperAdminController::class, 'index'])
+    ->name('superadmin.dashboard');
+
     Route::get('/', function () {
         return redirect()->route('dashboard');
     });
 
-
-    // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])
-     ->name('dashboard');
+        ->name('dashboard');
 
-
-    // Categories
     Route::resource('categories', CategoryController::class);
 
-
-    // Products
     Route::resource('products', ProductController::class);
 
     Route::resource('product', ProductController::class);
 
-
-    // Suppliers
     Route::resource('suppliers', SupplierController::class);
 
-
-    // Purchases
     Route::resource('purchases', PurchaseController::class)
         ->only(['index', 'create', 'store', 'show']);
-
-
-    // Sales
+    
     Route::resource('sales', SaleController::class)
         ->only(['index', 'create', 'store', 'show']);
 });

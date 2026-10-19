@@ -54,6 +54,24 @@
             box-shadow: 0 2px 10px rgba(0,0,0,.05);
         }
 
+        .logged-out {
+            background:grey;
+            padding: 5px;
+            border-radius: 12px;
+            border-color: rgba(175, 163, 163, 0.05);
+            margin-bottom: 20px;
+            box-shadow: none;
+             display: flex;
+             justify-content: space-between;
+            align-items: center;
+            gap: 20px
+        }
+        .nav-content {
+            display:flex;
+            justify-content:space-between;
+            gap:20px;
+        }
+
         .btn {
             display: inline-block;
             padding: 9px 14px;
@@ -127,9 +145,10 @@
 
 <body>
 
-<nav>
+<nav class="nav-content">
 
-    <a href="{{ route('dashboard') }}">
+   <div class="nav-links">
+     <a href="{{ route('dashboard') }}">
         Dashboard
     </a>
 
@@ -157,6 +176,17 @@
         Sales
     </a>
 
+   </div>
+   <div class="logging-out">
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+
+            <button type="submit" class="logged-out">
+                Logout
+            </button>
+        </form>
+
+   </div>
 </nav>
 
 <div class="container">

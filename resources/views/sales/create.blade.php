@@ -13,113 +13,127 @@
 </div>
 
 
-<div class="card">
+<div class="form-card">
+    <div style="background: #e8eaec;
+    padding:25px;
+    border-radius:15px;">
 
-    <form action="{{ route('sales.store') }}" method="POST">
+        <form action="{{ route('sales.store') }}" method="POST">
 
-        @csrf
+            @csrf
 
-        <div style="margin-bottom: 15px;">
+        <div class="card">
+                <div style="margin-bottom: 15px;">
 
-            <label for="product_id">
-                Product
-            </label>
+                    <label for="product_id">
+                        Product
+                    </label>
 
-            <select name="product_id" id="product_id" required>
+                    <select name="product_id" id="product_id" required>
 
-                <option value="">
-                    -- Select Product --
-                </option>
+                        <option value="">
+                            -- Select Product --
+                        </option>
 
-                @foreach($products as $product)
+                        @foreach($products as $product)
 
-                    <option
-                        value="{{ $product->id }}"
-                        {{ old('product_id') == $product->id ? 'selected' : '' }}
+                            <option
+                                value="{{ $product->id }}"
+                                {{ old('product_id') == $product->id ? 'selected' : '' }}
+                            >
+                                {{ $product->name }}
+                                — Stock: {{ $product->quantity }}
+                                — Selling Price: TZS {{ number_format($product->selling_price, 2) }}
+                            </option>
+
+                        @endforeach
+
+                    </select>
+
+                </div>
+        </div>
+
+
+        <div class="card">
+                <div style="margin-bottom: 15px;">
+
+                    <label for="quantity">
+                        Quantity
+                    </label>
+
+                    <input
+                        type="number"
+                        name="quantity"
+                        id="quantity"
+                        value="{{ old('quantity') }}"
+                        min="1"
+                        required
                     >
-                        {{ $product->name }}
-                        — Stock: {{ $product->quantity }}
-                        — Selling Price: TZS {{ number_format($product->selling_price, 2) }}
-                    </option>
 
-                @endforeach
-
-            </select>
-
+                </div>
         </div>
 
 
-        <div style="margin-bottom: 15px;">
+        <div class="card">
+                <div style="margin-bottom: 15px;">
 
-            <label for="quantity">
-                Quantity
-            </label>
+                    <label for="selling_price">
+                        Selling Price per Item
+                    </label>
 
-            <input
-                type="number"
-                name="quantity"
-                id="quantity"
-                value="{{ old('quantity') }}"
-                min="1"
-                required
-            >
+                    <input
+                        type="number"
+                        name="selling_price"
+                        id="selling_price"
+                        value="{{ old('selling_price') }}"
+                        min="0"
+                        step="0.01"
+                        required
+                    >
 
+                </div>
         </div>
 
 
-        <div style="margin-bottom: 15px;">
 
-            <label for="selling_price">
-                Selling Price per Item
-            </label>
+            <div class="card">
+                    <div style="margin-bottom: 15px;">
 
-            <input
-                type="number"
-                name="selling_price"
-                id="selling_price"
-                value="{{ old('selling_price') }}"
-                min="0"
-                step="0.01"
-                required
-            >
+                    <label for="date">
+                        Sale Date
+                    </label>
 
-        </div>
+                    <input
+                        type="date"
+                        name="date"
+                        id="date"
+                        value="{{ old('date', date('Y-m-d')) }}"
+                        required
+                    >
 
+                </div>
 
-        <div style="margin-bottom: 15px;">
+            </div>
 
-            <label for="date">
-                Sale Date
-            </label>
+       
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;align-items:right;">
 
-            <input
-                type="date"
-                name="date"
-                id="date"
-                value="{{ old('date', date('Y-m-d')) }}"
-                required
-            >
+                    <button type="submit" class="btn" style="align-items;">
+                        Record Sale
+                    </button>
 
-        </div>
+                    <a
+                        href="{{ route('sales.index') }}"
+                        class="btn btn-secondary"
+                    >
+                        Cancel
+                    </a>
 
-
-        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-
-            <button type="submit" class="btn">
-                Record Sale
-            </button>
-
-            <a
-                href="{{ route('sales.index') }}"
-                class="btn btn-secondary"
-            >
-                Cancel
-            </a>
+                </div>
 
         </div>
-
-    </form>
-
+        </form>
+    </div>
 </div>
 
 @endsection

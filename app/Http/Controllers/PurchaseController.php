@@ -41,8 +41,8 @@ class PurchaseController extends Controller
             'product_id' => ['required', 'exists:products,id'],
             'quantity' => ['required', 'integer', 'min:1'],
             'buying_price' => ['required', 'numeric', 'min:0'],
-            'date' => ['required', 'date'],
-        ]);
+            'date' => ['required', 'date','before_or_equal:today']
+            ]);
 
         DB::transaction(function () use ($validated) {
 

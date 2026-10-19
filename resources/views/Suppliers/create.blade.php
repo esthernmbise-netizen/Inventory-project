@@ -71,7 +71,7 @@
 
             <input
                 type="text"
-                name="name"
+                name="s.name"
                 id="name"
                 value="{{ old('name') }}"
                 placeholder="Enter supplier name"

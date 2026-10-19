@@ -22,7 +22,7 @@ class Product extends Model
         'selling_price' => 'decimal:2',
         'quantity' => 'integer',
         'minimum_stock' => 'integer',
-    ];
+    ]
 
     public function category(): BelongsTo
     {
