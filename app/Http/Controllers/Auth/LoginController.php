@@ -3,77 +3,89 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Services\EmailAccessVerification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Throwable;
 
 class LoginController extends Controller
 {
-    // Display the login page
+    /**
+     * Display the login page.
+     */
     public function showLoginForm()
     {
         return view('auth.login');
     }
 
-    // Process login credentials
-  
+    /**
+     * Authenticate the user and require confirmation for this login.
+     */
+    public function login(
+        Request $request,
+        EmailAccessVerification $verification
+    ) {
+        $credentials = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required'],
+        ]);
 
-public function login(\Illuminate\Http\Request $request)
-{
-    $credentials = $request->validate([
-        'email' => ['required', 'email'],
-        'password' => ['required'],
-    ]);
+        // Check the user's credentials.
+        if (!Auth::attempt($credentials)) {
+            return back()
+                ->withErrors([
+                    'email' => 'The provided credentials do not match our records.',
+                ])
+                ->onlyInput('email');
+        }
 
-    if (!auth()->attempt($credentials)) {
-        return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
-        ])->onlyInput('email');
-    }
+        // Protect the authenticated session.
+        $request->session()->regenerate();
 
-    $request->session()->regenerate();
+        // Every login must have a fresh email confirmation.
+        $request->session()->forget('email_access_challenge_id');
 
-    $user = $request->user();
-
-    // Block access until the email is verified.
-    if (!$user->hasVerifiedEmail()) {
         try {
-            $user->sendEmailVerificationNotification();
+            // Send a new confirmation link for this login.
+            $challengeId = $verification->send($request->user());
 
-            return redirect()->route('verification.notice')
+            // Bind the confirmation challenge to this session.
+            $request->session()->put(
+                'email_access_challenge_id',
+                $challengeId
+            );
+
+            return redirect()
+                ->route('verification.notice')
                 ->with(
                     'success',
-                    'Your email is not verified. A verification email has been requested. Check your inbox and spam folder.'
+                    'A new login confirmation link has been sent to your email. Open the link to continue.'
                 );
-        } catch (\Throwable $exception) {
+
+        } catch (Throwable $exception) {
+            // Log the technical error without exposing it to the user.
             report($exception);
 
-            return redirect()->route('verification.notice')
+            return redirect()
+                ->route('verification.notice')
                 ->withErrors([
-                    'email' => 'Your email is not verified, and the verification message could not be sent. Please check the mail configuration.',
+                    'email' => 'We could not send your login confirmation email. Please try resending it or check the mail configuration.',
                 ]);
         }
     }
 
-    // Direct verified Super Admin to the correct dashboard.
-    if ($user->role === 'super_admin') {
-        return redirect()->route('superadmin.dashboard');
-    }
-
-    // Direct other verified users to their shop dashboard.
-    return redirect()->route('dashboard');
-}
-
-
-    // Log out the authenticated user
+    /**
+     * Log out the authenticated user.
+     */
     public function logout(Request $request)
     {
         Auth::logout();
 
         $request->session()->invalidate();
-
         $request->session()->regenerateToken();
 
-        return redirect('/login')
+        return redirect()
+            ->route('login')
             ->with('success', 'You have been logged out successfully.');
     }
 }

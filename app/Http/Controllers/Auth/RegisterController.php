@@ -4,25 +4,25 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Auth\Events\Registered;
+use App\Services\EmailAccessVerification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Throwable;
 
 class RegisterController extends Controller
 {
-    // Show registration page
     public function showRegistrationForm()
     {
         return view('auth.register');
     }
 
-    // Create a new account and request email verification
-    public function register(Request $request)
-    {
+    public function register(
+        Request $request,
+        EmailAccessVerification $verification
+    ) {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-
             'email' => [
                 'required',
                 'string',
@@ -30,7 +30,6 @@ class RegisterController extends Controller
                 'max:255',
                 'unique:users,email',
             ],
-
             'password' => [
                 'required',
                 'string',
@@ -45,16 +44,33 @@ class RegisterController extends Controller
             'password' => Hash::make($validated['password']),
         ]);
 
-        // Log in the new user so they can access the verification page.
         Auth::login($user);
 
         $request->session()->regenerate();
+        $request->session()->forget('email_access_challenge_id');
 
-        // Send Laravel's email verification notification.
-        event(new Registered($user));
+        try {
+            $challengeId = $verification->send($user);
 
-        // Do not send an unverified user to the dashboard.
-        return redirect()->route('verification.notice')
-            ->with('success', 'Account created! Please verify your email before using DukaStock.');
+            $request->session()->put(
+                'email_access_challenge_id',
+                $challengeId
+            );
+        } catch (Throwable $exception) {
+            report($exception);
+
+            return redirect()
+                ->route('verification.notice')
+                ->withErrors([
+                    'email' => 'Your account was created, but the confirmation email could not be sent. Please use the resend button.',
+                ]);
+        }
+
+        return redirect()
+            ->route('verification.notice')
+            ->with(
+                'success',
+                'Your account was created. Open the login confirmation link sent to your email to continue.'
+            );
     }
 }
